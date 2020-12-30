@@ -1,0 +1,170 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Script file="XiconBGTargets.lua"/>
+
+	<Frame name="EnemyFrames" parent="UIParent" hidden="false">
+		<Scripts>
+			<OnLoad>
+				<!--EnemyFrames.OnLoad();-->
+			</OnLoad>
+            <OnEvent>
+                <!--EnemyFrames.OnEvent(event);-->
+            </OnEvent>
+            <OnUpdate>
+                <!--EnemyFrames.VerifyZoneUpdate(arg1);
+                EnemyFrames.GatherDataUpdate(arg1)
+                EnemyFrames.UnitFramesUpdate(arg1)
+                EnemyFrames.UnitsDisplayUpdate(arg1)-->
+            </OnUpdate>
+		</Scripts>
+	</Frame>
+    
+    <FontString name="EnemyFramesFont" inherits="MasterFont" font="Fonts\ARIALN.ttf" virtual="true">
+        <FontHeight>
+            <AbsValue val="13" />
+        </FontHeight>
+    </FontString>
+    
+    <!-- Individual Units -->
+    <Frame name="EnemyUnitTemplate" inherits="SecureActionButtonTemplate" parent="UIParent" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="140" y="25" />
+        </Size>
+        <Scripts>
+            <OnLoad>
+                this:RegisterForClicks("LeftButton")
+            </OnLoad>
+            <OnEnter>
+                XiconBGTargets:OnFrameEnter(this)
+            </OnEnter>
+            <OnLeave>
+                XiconBGTargets:OnFrameLeave(this)
+            </OnLeave>
+            <!--OnClick>
+                EnemyFrames.UnitClickEvent(this)
+            </OnClick-->
+        </Scripts>
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <TileSize>
+                <AbsValue val="32" />
+            </TileSize>
+        </Backdrop>
+        <Scripts>
+            <OnLoad>
+                this:SetBackdropColor(0.0, 0.0, 0.0, 0.7)
+            </OnLoad>
+        </Scripts>
+        <Layers>
+            <Layer level="OVERLAY">
+                <!-- WSG Flag Icon -->
+                <Texture name="$parentFlag" file="Interface\Icons\INV_BannerPVP_02" hidden="true">
+                    <Size>
+                        <AbsDimension x="24" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativepoint="LEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <!-- Highlight -->
+                <Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" hidden="true" alphaMode="ADD" alpha="1" setAllPoints="$parent">
+
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- HP bar -->
+			<StatusBar name="$parentHealth">
+				<Size>
+					<AbsDimension x="137" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\AddOns\XiconBGTargets\gfx\BantoBar"/>
+				<BarColor r="0.0" g="1.0" b="0.0"/>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <!-- Name -->
+                        <FontString name="$parentName" inherits="EnemyFramesFont" text="Player">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="3" y="0" />
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <!-- % HP -->
+                        <FontString name="$parentPct" inherits="EnemyFramesFont" text="100%">
+                            <Anchors>
+                                <Anchor point="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="-3" y="0" />
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+			</StatusBar>
+
+            <!-- Power Bar -->
+			<StatusBar name="$parentPower">
+				<Size>
+					<AbsDimension x="137" y="6"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-17"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\AddOns\XiconBGTargets\gfx\BantoBar"/>
+				<BarColor r="0.0" g="0.0" b="1.0"/>
+			</StatusBar>
+        </Frames>
+    </Frame>
+
+    
+    <!-- Dragable masterframe to contain the units -->
+    <!--Frame name="EnemyUnits" parent="UIParent" hidden="true" movable="true">
+        <Size>
+            <AbsDimension x="80" y="15" />
+        </Size>
+		<Anchors>
+            <Anchor point="CENTER" />
+		</Anchors>
+        <Scripts>
+            <OnLoad>this:RegisterForDrag("RightButton");</OnLoad>
+            <OnDragStart>this:StartMoving();</OnDragStart>
+            <OnDragStop>this:StopMovingOrSizing();</OnDragStop>
+        </Scripts>
+        <Layers>
+            <Layer level="OVERLAY">
+
+                <FontString name="$parentPlayerName" inherits="GameFontNormalSmall" text="EnemyFrames">
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-2" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame-->
+</Ui>
