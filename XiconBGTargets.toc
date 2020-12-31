@@ -10,4 +10,6 @@ localization\localization.deDE.lua
 localization\localization.frFR.lua
 localization\localization.zhCN.lua
 
+Constants.lua
+XiconDebuffLib.lua
 XiconBGTargets.lua

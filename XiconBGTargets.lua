@@ -30,11 +30,20 @@ XiconBGTargets:SetAlpha(0)
 local factionGrp
 local FlagIcon
 local HealerIcon = {"Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons", -1, 0}
+local testMode
+
 local function getIconCoords (x, y) -- MONK 2,0
     local b = 1/256;
     return {b * x * 64, b * (x * 64 + 64), b * y * 64, b * (y * 64 + 64)};
 end
 
+function XiconBGTargets:Test(value)
+    testMode = value
+    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 29166, GetSpellInfo(29166)) -- innervate
+    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 22570, GetSpellInfo(22570)) -- maim
+    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 14309, GetSpellInfo(14309)) -- freezing trap
+    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 12826, GetSpellInfo(12826)) -- polymorph
+end
 
 local function createUnitFrames()
     -- draggable masterframe
@@ -69,7 +78,7 @@ local function createUnitFrames()
     for i=1, 15 do -- max 15 in BG
         local yoffset = (i - 1) * -26 - 18
         local xoffset = 0
-        local unit = CreateFrame("Button", nil, EnemyUnits, "SecureActionButtonTemplate")
+        local unit = CreateFrame("Button", "XiconBGUnit" .. i, EnemyUnits, "SecureActionButtonTemplate")
         unit:SetPoint("TOPLEFT", EnemyUnits, "TOPLEFT", xoffset, yoffset)
         unit:SetHeight(25)
         unit:SetWidth(140)
@@ -78,9 +87,30 @@ local function createUnitFrames()
             tile = false, tileSize = 32,
         })
         unit:SetBackdropColor(0,0,0,1)
-        unit:RegisterForClicks("LeftButton")
+
+        ---macro
+        unit:SetAttribute("type", "macro") -- left click causes macro
+        if i == 1 then
+            unit:SetAttribute("macrotext", "/targetexact Timber Worg") --for testing
+        end
+
+        ---flag
+        unit.flag = unit:CreateTexture(nil, "OVERLAY")
+        unit.flag:SetTexture(FlagIcon)
+        unit.flag:SetSize(24, 24)
+        unit.flag:SetPoint("LEFT", unit, "RIGHT", 0, 0)
+        unit.flag:Hide()
+
+        ---healIcon
+        unit.heal = unit:CreateTexture(nil, "OVERLAY")
+        unit.heal:SetTexture("Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons")
+        unit.heal:SetSize(24, 24)
+        unit.heal:SetPoint("RIGHT", unit, "LEFT", 0, 0)
+        unit.heal:SetTexCoord(unpack(getIconCoords(2,0)))
+        unit.heal:Show()
+
+        ---highlight
         function unit:Update()
-            print("Update")
             if self.hasAttention or self.highlight.hasMouseover then
                 self.highlight:Show()
             else
@@ -95,10 +125,7 @@ local function createUnitFrames()
             self.highlight.hasMouseover = nil
             self:Update()
         end)
-        unit:SetAttribute("type", "macro") -- left click causes macro
-        if i == 1 then
-            unit:SetAttribute("macrotext", "/targetexact Timber Worg")
-        end
+
         unit:RegisterEvent("PLAYER_TARGET_CHANGED")
         local function eventHandler(self, event, ...)
             self.hasAttention = self.healthBar.nameText:GetText() == UnitName("target")
@@ -106,22 +133,6 @@ local function createUnitFrames()
         end
         unit:SetScript("OnEvent", eventHandler)
 
-        --flag
-        unit.flag = unit:CreateTexture(nil, "OVERLAY")
-        unit.flag:SetTexture(FlagIcon)
-        unit.flag:SetSize(24, 24)
-        unit.flag:SetPoint("LEFT", unit, "RIGHT", 0, 0)
-        unit.flag:Show()
-
-        --healIcon
-        unit.heal = unit:CreateTexture(nil, "OVERLAY")
-        unit.heal:SetTexture("Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons")
-        unit.heal:SetSize(24, 24)
-        unit.heal:SetPoint("RIGHT", unit, "LEFT", 0, 0)
-        unit.heal:SetTexCoord(unpack(getIconCoords(2,0)))
-        unit.heal:Show()
-
-        --highlight
         unit.highlight = CreateFrame("Frame", nil, unit)
         unit.highlight:SetFrameLevel(5)
         unit.highlight:SetAllPoints(unit)
@@ -166,7 +177,7 @@ local function createUnitFrames()
         unit.highlight.left:SetWidth(10)
         unit.highlight.right:SetWidth(10)
 
-        -- HP bar
+        --- HP bar
         local healthBar = CreateFrame("StatusBar", nil, unit)
         healthBar:SetStatusBarTexture("Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\Minimalist")
         healthBar:SetMinMaxValues(0, 100)
@@ -230,6 +241,7 @@ function events:ADDON_LOADED(...)
 
         end
         print("Loaded")
+        XiconDebuffLib_BG:Init(nil)
         createUnitFrames()
         XiconBGTargets:UnregisterEvent("ADDON_LOADED")
     end
@@ -350,8 +362,9 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                     break
                 end
             end
-            if status == "active" and mapName ~= "Alterac Valley" then
+            if status == "active" and mapName ~= "Alterac Valley" or testMode then
                 XiconBGTargets.EnemyUnits:Show()
+                local opposingFaction = {}
                 local opposingFaction = {}
                 local j = 1
                 for i=1, GetNumBattlefieldScores() do
@@ -365,6 +378,9 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                             j = j + 1
                         end
                     end
+                end
+                if testMode then
+                    opposingFaction[j] = {name = "Timber Worg", class = "Warrior", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
                 end
                 table.sort(opposingFaction, function(a,b) -- sort by class and name
                     local class = a.class:upper() < b.class:upper()
@@ -392,6 +408,7 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                     XiconBGTargets.EnemyUnits.unitFrames[i].healthBar:SetStatusBarColor(classcolor.r, classcolor.g, classcolor.b)
                     XiconBGTargets.EnemyUnits.unitFrames[i]:SetAttribute("macrotext", "/targetexact " .. opposingFaction[i].name)
                     XiconBGTargets.EnemyUnits.unitFrames[i]:Show()
+                    XiconDebuffLib_BG:assignDebuffs(opposingFaction[i].name, XiconBGTargets.EnemyUnits.unitFrames[i], false)
                 end
             end
         else
