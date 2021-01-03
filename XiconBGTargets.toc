@@ -2,7 +2,7 @@
 ## Title: |cffa0f6aaXiconBGTargets|r
 ## Notes: BG Targets for TBC 2.4.3
 ## Author: XiCoN-Knall-
-## Version: 1.0-Beta
+## Version: 1.1-Beta
 ## SavedVariables: XiconBGTargetsDB
 
 localization\localization.enUS.lua
