@@ -3,6 +3,7 @@
 v1.0-Beta
 
 This addon shows all available enemy units within a BG (except AV).
+You can move the frame by right clicking on the text "EnemyFrames".
 
 ## Screenshot
 
