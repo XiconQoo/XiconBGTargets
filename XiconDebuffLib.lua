@@ -179,6 +179,9 @@ function XiconDebuffLib_BG:addDebuff(destName, destGUID, spellID, spellName)
             iconFrame.cooldown:SetText(formatTimer(milliTimer, 1))
         else -- fallback in case SPELL_AURA_REMOVED is not fired
             removeDebuff(destName, destGUID, spellName)
+            iconFrame:Hide()
+            iconFrame:SetParent(nil)
+            iconFrame:SetScript("OnUpdate", nil)
         end
     end
 
