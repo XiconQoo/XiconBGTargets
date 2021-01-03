@@ -6,7 +6,7 @@ This addon shows all available enemy units within a BG (except AV).
 
 ## Screenshot
 
-![Screenshot](../readme-media/screenshot/sample.jpg)
+![Screenshot](../sample.jpg)
 
 ### Changes
 
