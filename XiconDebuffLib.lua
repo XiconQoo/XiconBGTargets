@@ -1,7 +1,7 @@
 local LIB_NAME = "XiconDebuffLib_BG"
 local trackedUnitNames = {}
 local trackedCC = initTrackedCrowdControl()
-local XiconPlateBuffsDB_local
+local XiconDebuffSV_local
 local select, tonumber, tostring, ceil = select, tonumber, tostring, ceil
 
 local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
@@ -32,12 +32,22 @@ XiconDebuffLib_BG:SetAlpha(0)
 ---------------------------------------------------------------------------------------------
 
 function XiconDebuffLib_BG:Init(savedVariables)
-    XiconPlateBuffsDB_local = savedVariables
+    XiconDebuffSV_local = savedVariables
+    if not XiconDebuffSV_local then
+        XiconDebuffSV_local = {}
+        XiconDebuffSV_local["iconSize"] = 25
+        XiconDebuffSV_local["yOffset"] = 0
+        XiconDebuffSV_local["xOffset"] = -2
+        XiconDebuffSV_local["fontSize"] = 10
+        XiconDebuffSV_local["responsive"] = false
+        XiconDebuffSV_local["sorting"] = 'descending'
+        XiconDebuffSV_local["alpha"] = 0.9
+    end
     print("initialized")
 end
 
 function XiconDebuffLib_BG:UpdateSavedVariables(savedVariables)
-    XiconPlateBuffsDB_local = savedVariables
+    XiconDebuffSV_local = savedVariables
 end
 
 function XiconDebuffLib_BG:GetTrackedUnitNames()
@@ -128,13 +138,13 @@ function XiconDebuffLib_BG:addDebuff(destName, destGUID, spellID, spellName)
     local _, _, texture = GetSpellInfo(spellID)
     local duration = trackedCC[spellName].duration
     local icon = CreateFrame("frame", nil, nil)
-    icon:SetAlpha(XiconPlateBuffsDB_local["alpha"])
+    icon:SetAlpha(XiconDebuffSV_local["alpha"])
     icon.texture = icon:CreateTexture(nil, "BORDER")
     icon.texture:SetAllPoints(icon)
     icon.texture:SetTexture(texture)
     icon.cooldown = icon:CreateFontString(nil, "OVERLAY")
-    icon.cooldown:SetAlpha(XiconPlateBuffsDB_local["alpha"])
-    icon.cooldown:SetFont("Fonts\\ARIALN.ttf", XiconPlateBuffsDB_local["fontSize"], "OUTLINE")
+    icon.cooldown:SetAlpha(XiconDebuffSV_local["alpha"])
+    icon.cooldown:SetFont("Fonts\\ARIALN.ttf", XiconDebuffSV_local["fontSize"], "OUTLINE")
 
     icon.cooldown:SetTextColor(0.7, 1, 0)
     icon.cooldown:SetAllPoints(icon)
@@ -178,12 +188,12 @@ function XiconDebuffLib_BG:addDebuff(destName, destGUID, spellID, spellName)
         iconTimer(icon)
     end)
     --sorting
-    if XiconPlateBuffsDB_local["sorting"] == "none" then
+    if XiconDebuffSV_local["sorting"] == "none" then
         return
     end
-    if XiconPlateBuffsDB_local["sorting"] == "ascending" then
+    if XiconDebuffSV_local["sorting"] == "ascending" then
         table.sort(trackedUnitNames[destName..destGUID], function(timeleftA,timeleftB) return timeleftA.endtime < timeleftB.endtime end)
-    elseif XiconPlateBuffsDB_local["sorting"] == "descending" then
+    elseif XiconDebuffSV_local["sorting"] == "descending" then
         table.sort(trackedUnitNames[destName..destGUID], function(timeleftA,timeleftB) return timeleftA.endtime > timeleftB.endtime end)
     end
 end
@@ -195,26 +205,26 @@ local function addIcons(dstName, namePlate)
     if not width then
         width = namePlate:GetWidth()
     end
-    if XiconPlateBuffsDB_local["responsive"] and num * XiconPlateBuffsDB_local["iconSize"] + (num * 2 - 2) > width then
+    if XiconDebuffSV_local["responsive"] and num * XiconDebuffSV_local["iconSize"] + (num * 2 - 2) > width then
         size = (width - (num * 2 - 2)) / num
-        if XiconPlateBuffsDB_local["fontSize"] < size/2 then
-            fontSize = XiconPlateBuffsDB_local["fontSize"]
+        if XiconDebuffSV_local["fontSize"] < size/2 then
+            fontSize = XiconDebuffSV_local["fontSize"]
         else
             fontSize = size / 2
         end
     else
-        fontSize = XiconPlateBuffsDB_local["fontSize"]
-        size = XiconPlateBuffsDB_local["iconSize"]
+        fontSize = XiconDebuffSV_local["fontSize"]
+        size = XiconDebuffSV_local["iconSize"]
     end
     for i = 1, #trackedUnitNames[dstName] do
         trackedUnitNames[dstName][i]:ClearAllPoints()
         trackedUnitNames[dstName][i]:SetWidth(size)
         trackedUnitNames[dstName][i]:SetHeight(size)
-        trackedUnitNames[dstName][i]:SetAlpha(XiconPlateBuffsDB_local["alpha"])
-        trackedUnitNames[dstName][i].cooldown:SetAlpha(XiconPlateBuffsDB_local["alpha"])
+        trackedUnitNames[dstName][i]:SetAlpha(XiconDebuffSV_local["alpha"])
+        trackedUnitNames[dstName][i].cooldown:SetAlpha(XiconDebuffSV_local["alpha"])
         trackedUnitNames[dstName][i].cooldown:SetFont("Fonts\\ARIALN.ttf", fontSize, "OUTLINE")
         if i == 1 then
-            trackedUnitNames[dstName][i]:SetPoint("RIGHT", namePlate, "LEFT", XiconPlateBuffsDB_local["xOffset"], XiconPlateBuffsDB_local["yOffset"])
+            trackedUnitNames[dstName][i]:SetPoint("RIGHT", namePlate, "LEFT", XiconDebuffSV_local["xOffset"], XiconDebuffSV_local["yOffset"])
         else
             trackedUnitNames[dstName][i]:SetPoint("RIGHT", trackedUnitNames[dstName][i - 1], - size - 2, 0)
         end
