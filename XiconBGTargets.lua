@@ -3,12 +3,6 @@ local select, tonumber, tostring = select, tonumber, tostring
 local XiconBGTargetsDB_local
 local L = XiconBGTargetsLocals
 
---local COMBATLOG_OBJECT_TYPE_PLAYER = COMBATLOG_OBJECT_TYPE_PLAYER
---local COMBATLOG_OBJECT_CONTROL_PLAYER = COMBATLOG_OBJECT_CONTROL_PLAYER
-local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
-local COMBATLOG_OBJECT_REACTION_NEUTRAL = COMBATLOG_OBJECT_REACTION_NEUTRAL
-
-
 local print = function(s)
     local str = s
     if s == nil then str = "" end
@@ -29,7 +23,6 @@ XiconBGTargets:SetAlpha(0)
 
 local factionGrp
 local FlagIcon
-local HealerIcon = {"Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons", -1, 0}
 local testMode
 
 local function getIconCoords (x, y) -- MONK 2,0
@@ -53,7 +46,7 @@ local function createUnitFrames()
     EnemyUnits:RegisterForDrag("RightButton")
     EnemyUnits:SetScript("OnDragStart", EnemyUnits.StartMoving)
     EnemyUnits:SetScript("OnDragStop", EnemyUnits.StopMovingOrSizing)
-    EnemyUnits:SetPoint("CENTER")
+    EnemyUnits:SetPoint(XiconBGTargetsDB_local["point"], UIParent, XiconBGTargetsDB_local["relativePoint"], XiconBGTargetsDB_local["xOffset"], XiconBGTargetsDB_local["yOffset"])
     EnemyUnits:SetWidth(80)
     EnemyUnits:SetHeight(15)
     EnemyUnits:SetScale(1)
@@ -238,8 +231,12 @@ function events:ADDON_LOADED(...)
         XiconBGTargetsDB_local = XiconBGTargetsDB
         if not XiconBGTargetsDB_local then
             XiconBGTargetsDB_local = {}
-
         end
+        if not XiconBGTargetsDB_local["point"] then XiconBGTargetsDB_local["point"] = "CENTER" end
+        if not XiconBGTargetsDB_local["relativePoint"] then XiconBGTargetsDB_local["relativePoint"] = "CENTER" end
+        if not XiconBGTargetsDB_local["xOffset"] then XiconBGTargetsDB_local["xOffset"] = 0 end
+        if not XiconBGTargetsDB_local["yOffset"] then XiconBGTargetsDB_local["yOffset"] = 0 end
+
         print("Loaded")
         XiconDebuffLib_BG:Init(nil)
         createUnitFrames()
@@ -247,20 +244,7 @@ function events:ADDON_LOADED(...)
     end
 end
 
-function events:COMBAT_LOG_EVENT_UNFILTERED(...)
-    local _, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellID, spellName, spellSchool, auraType, stackCount = select(1, ...)
-    local isEnemy = bit.band(dstFlags, COMBATLOG_OBJECT_REACTION_NEUTRAL) == COMBATLOG_OBJECT_REACTION_NEUTRAL or bit.band(dstFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) == COMBATLOG_OBJECT_REACTION_HOSTILE
-
-end
-
-function events:PLAYER_FOCUS_CHANGED()
-
-end
-
-function events:UPDATE_MOUSEOVER_UNIT()
-
-end
-
+local flagCarrier
 local function parseFlagEvent(msg, faction)
 
     if( XiconBGTargets.activeBF == "Warsong Gulch" ) then
@@ -272,31 +256,36 @@ local function parseFlagEvent(msg, faction)
             faction = "Alliance"
         end
     end
-
-    local flagCarrier
     -- WSG, pick up
     if( string.match(msg, L["was picked up by (.+)!"]) ) then
-        flagCarrier = string.match(msg, L["was picked up by (.+)!"])
-
+        if faction ~= factionGrp then
+            flagCarrier = string.match(msg, L["was picked up by (.+)!"])
+        end
     -- EoTS, pick up
     elseif( string.match(msg, L["(.+) has taken the flag!"]) ) then
-        flagCarrier = string.match(msg, L["(.+) has taken the flag!"])
-
+        if faction ~= factionGrp then
+            flagCarrier = string.match(msg, L["(.+) has taken the flag!"])
+        end
     -- WSG, returned
     elseif( string.match(msg, L["was returned to its base"]) ) then
-
-
+        if faction ~= factionGrp then
+            flagCarrier = nil
+        end
     -- EOTS, returned
     elseif( string.match(msg, L["flag has been reset"]) ) then
-
-
+        if faction ~= factionGrp then
+            flagCarrier = nil
+        end
     -- WSG/EoTS, captured
     elseif( string.match(msg, L["captured the"]) ) then
-
-
+        if faction ~= factionGrp then
+            flagCarrier = nil
+        end
     -- EoTS/WSG, dropped
     elseif( string.match(msg, L["was dropped by (.+)!"]) or string.match(msg, L["The flag has been dropped"]) ) then
-
+        if faction ~= factionGrp then
+            flagCarrier = nil
+        end
     end
 end
 
@@ -311,12 +300,15 @@ end
 local isInBattleground = false
 function events:PLAYER_ENTERING_WORLD()
     local instance = select(2, IsInInstance())
+    factionGrp = UnitFactionGroup("player")
     if (instance == "pvp") then
         isInBattleground = true
+        XiconBGTargets.EnemyUnits:Show()
         --load addon
     else
         isInBattleground = false
         -- hide frames
+        XiconBGTargets.EnemyUnits:Hide()
         -- wipe all data
     end
     --self.lastInstance = instance
@@ -345,14 +337,13 @@ end
 -- ON_UPDATE (periodically update nameplates)
 
 ---------------------------------------------------------------------------------------------
----
+
 local updateInterval, lastUpdate = 0.1, 0
 XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
     lastUpdate = lastUpdate + elapsed
     if lastUpdate > updateInterval then
         -- do stuff
-        factionGrp = UnitFactionGroup("player")
-        isInBattleground = true --select(2, IsInInstance()) == "pvp"
+        --isInBattleground = true --select(2, IsInInstance()) == "pvp"
         if isInBattleground then
             local status, mapName, instanceID, lowestlevel, highestlevel, teamSize, registeredMatch
             for i=1, MAX_BATTLEFIELD_QUEUES do
@@ -364,7 +355,6 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
             end
             if status == "active" and mapName ~= "Alterac Valley" or testMode then
                 XiconBGTargets.EnemyUnits:Show()
-                local opposingFaction = {}
                 local opposingFaction = {}
                 local j = 1
                 for i=1, GetNumBattlefieldScores() do
@@ -403,6 +393,11 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                         XiconBGTargets.EnemyUnits.unitFrames[i].heal:Show()
                     else
                         XiconBGTargets.EnemyUnits.unitFrames[i].heal:Hide()
+                    end
+                    if flagCarrier and flagCarrier == opposingFaction[i].name then
+                        XiconBGTargets.EnemyUnits.unitFrames[i].flag:Show()
+                    else
+                        XiconBGTargets.EnemyUnits.unitFrames[i].flag:Hide()
                     end
                     XiconBGTargets.EnemyUnits.unitFrames[i].healthBar.nameText:SetText(opposingFaction[i].name)
                     XiconBGTargets.EnemyUnits.unitFrames[i].healthBar:SetStatusBarColor(classcolor.r, classcolor.g, classcolor.b)

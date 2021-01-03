@@ -33,16 +33,6 @@ XiconDebuffLib_BG:SetAlpha(0)
 
 function XiconDebuffLib_BG:Init(savedVariables)
     XiconPlateBuffsDB_local = savedVariables
-    if not XiconPlateBuffsDB_local then
-        XiconPlateBuffsDB_local = {}
-        XiconPlateBuffsDB_local["iconSize"] = 25
-        XiconPlateBuffsDB_local["yOffset"] = 0
-        XiconPlateBuffsDB_local["xOffset"] = -2
-        XiconPlateBuffsDB_local["fontSize"] = 10
-        XiconPlateBuffsDB_local["responsive"] = false
-        XiconPlateBuffsDB_local["sorting"] = 'descending'
-        XiconPlateBuffsDB_local["alpha"] = 0.9
-    end
     print("initialized")
 end
 
@@ -233,14 +223,12 @@ end
 
 local function hideIcons(dstName, namePlate)
     namePlate.xiconPlate = 0
-    namePlate.xiconPlateHooked = false
     if trackedUnitNames[dstName] then
         for i = 1, #trackedUnitNames[dstName] do
             trackedUnitNames[dstName][i]:SetParent(nil)
             trackedUnitNames[dstName][i]:Hide()
         end
     end
-    namePlate:SetScript("OnHide", nil)
 end
 
 local function updateIconsOnUnit(unit)
@@ -275,7 +263,7 @@ function XiconDebuffLib_BG:assignDebuffs(dstName, namePlate, force)
     local name
     if force and namePlate.xiconGUID then
         name = dstName .. namePlate.xiconGUID
-        if trackedUnitNames[name] == nil and namePlate.xiconPlateHooked then
+        if trackedUnitNames[name] == nil and namePlate.xiconBGHooked then
             local kids = { namePlate:GetChildren() };
             for _, child in ipairs(kids) do
                 if child.destGUID then
@@ -290,7 +278,7 @@ function XiconDebuffLib_BG:assignDebuffs(dstName, namePlate, force)
             if splitStr[1] == dstName and #v > 0 and v[1]:GetParent() == nil then
                 name = k
                 break
-            elseif splitStr[1] == dstName and #v > 0 and namePlate.xiconPlateHooked then
+            elseif splitStr[1] == dstName and #v > 0 and namePlate.xiconBGHooked then
                 --update plate to rearrange icons
                 name = k
             end
@@ -312,16 +300,18 @@ function XiconDebuffLib_BG:assignDebuffs(dstName, namePlate, force)
             trackedUnitNames[dstName][j]:Show()
         end
         addIcons(dstName, namePlate)
-        if namePlate:GetScript("OnHide") and not namePlate.xiconPlateHooked then
-            namePlate.xiconPlateHooked = true
-            namePlate:HookScript("OnHide", function()
-                hideIcons(dstName, namePlate)
-            end)
-        else
-            namePlate.xiconPlateHooked = true
+        if not namePlate:GetScript("OnHide") then
+            --print("namePlate:SetScript(\"OnHide\")")
             namePlate:SetScript("OnHide", function()
                 hideIcons(dstName, namePlate)
             end)
+            namePlate.xiconBGHooked = true
+        elseif not namePlate.xiconBGHooked then
+            --print("namePlate:HookScript(\"OnHide\")")
+            namePlate:HookScript("OnHide", function()
+                hideIcons(dstName, namePlate)
+            end)
+            namePlate.xiconBGHooked = true
         end
     end
 end
