@@ -53,7 +53,7 @@ local function createUnitFrames()
     EnemyUnits:Hide()
     local title = EnemyUnits:CreateFontString(EnemyUnits, "OVERLAY", "GameFontNormalSmall")
     title:SetPoint("TOP", 0, -2)
-    title:SetText("EnemyFrames")
+    title:SetText("XiconBGTarget (right click to move)")
     EnemyUnits.title = title
 
     local frames = {}
