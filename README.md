@@ -1,6 +1,6 @@
 # XiconBGTargets TBC Addon
 
-v1.0-Beta
+### [v1.2-Beta Download Here](https://github.com/XiconQoo/XiconBGTargets/releases/download/v1.2-Beta/XiconBGTargets_v1.2-Beta.zip)
 
 This addon shows all available enemy units within a BG (except AV).
 You can move the frame by right clicking on the text "EnemyFrames".
@@ -10,6 +10,19 @@ You can move the frame by right clicking on the text "EnemyFrames".
 ![Screenshot](../readme-media/sample.jpg)
 
 ### Changes
+
+v1.2-Beta
+- SoHighPlates revert to nameplate.oldname:GetText() (more reliant)
+- add framePool array to reuse icon frames (less memory usage)
+- improve hideIcons (icon's OnUpdate on elapsed timer will recycle itself to framePool)
+- shown icons will be reused and timer will be updated (no new icons for active spells)
+- add synchronization between players (also syncs data from CCTracker)
+- handle spells from synchronization by spellID to overcome localization
+- cooldown text color updated properly
+- SPELL_AURA_REMOVED handled separately (sometimes destFlag and srcFlag are different)
+
+v1.1-Beta
+- show flag carrier icon WSG EYE
 
 v1.0-Beta
 
