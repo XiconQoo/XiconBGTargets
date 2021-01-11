@@ -4,6 +4,7 @@
 ## Author: XiCoN-Knall-
 ## Version: 1.2-Beta
 ## SavedVariables: XiconBGTargetsDB
+## Dependencies: Compatibility
 
 localization\localization.enUS.lua
 localization\localization.deDE.lua
@@ -11,5 +12,5 @@ localization\localization.frFR.lua
 localization\localization.zhCN.lua
 
 Constants.lua
-XiconDebuffLib.lua
+XiconDebuffModule.lua
 XiconBGTargets.lua

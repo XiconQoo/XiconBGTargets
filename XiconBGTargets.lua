@@ -3,6 +3,7 @@ local select, tonumber, tostring = select, tonumber, tostring
 local XiconBGTargetsDB_local
 local L = XiconBGTargetsLocals
 
+
 local print = function(s)
     local str = s
     if s == nil then str = "" end
@@ -24,18 +25,35 @@ XiconBGTargets:SetAlpha(0)
 local factionGrp
 local FlagIcon
 local testMode
+local isInBattleground = false
+local XiconDebuffLib_BG
+local localizedClassNames = {}
+localizedClassNames["male"] = {}
+localizedClassNames["female"] = {}
 
 local function getIconCoords (x, y) -- MONK 2,0
     local b = 1/256;
     return {b * x * 64, b * (x * 64 + 64), b * y * 64, b * (y * 64 + 64)};
 end
 
-function XiconBGTargets:Test(value)
+function XiconBGTargets:Test(value) -- /run XiconBGTargets:Test(true)
     testMode = value
-    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 29166, GetSpellInfo(29166)) -- innervate
-    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 22570, GetSpellInfo(22570)) -- maim
-    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 14309, GetSpellInfo(14309)) -- freezing trap
-    XiconDebuffLib_BG:addDebuff("Timber Worg", "0x000123", 12826, GetSpellInfo(12826)) -- polymorph
+    isInBattleground = value
+    if value then
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxilia", "0x000123", 22570, 18) -- maim
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxilia", "0x000123", 14309, 12) -- freezing trap
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxilia", "0x000123", 12826, 5) -- polymorph
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxmo", "0x000123", 22570, 18) -- maim
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxmo", "0x000123", 14309, 12) -- freezing trap
+        XiconDebuffLib_BG:addOrRefreshDebuff("Noxmo", "0x000123", 12826, 5) -- polymorph
+        XiconDebuffLib_BG:addOrRefreshDebuff("Teebee", "0x000123", 19503, 20) -- scatter shot
+        XiconDebuffLib_BG:addOrRefreshDebuff("Teebee", "0x000123", 22570, 15) -- maim
+        XiconDebuffLib_BG:addOrRefreshDebuff("Teebee", "0x000123", 14309, 12) -- freezing trap
+        XiconDebuffLib_BG:addOrRefreshDebuff("Teebee", "0x000123", 12826, 5) -- polymorph
+        XiconDebuffLib_BG:addOrRefreshDebuff("Knall", "0x000123", 33786) -- cyclone
+        XiconDebuffLib_BG:addOrRefreshDebuff("Knall", "0x000123", 8983) -- bash
+        XiconDebuffLib_BG:addOrRefreshDebuff("Timber Worg", "0x000123", 19386) -- wyvern sting
+    end
 end
 
 local function createUnitFrames()
@@ -46,15 +64,14 @@ local function createUnitFrames()
     EnemyUnits:RegisterForDrag("RightButton")
     EnemyUnits:SetScript("OnDragStart", EnemyUnits.StartMoving)
     EnemyUnits:SetScript("OnDragStop", EnemyUnits.StopMovingOrSizing)
-    EnemyUnits:SetPoint(XiconBGTargetsDB_local["point"], UIParent, XiconBGTargetsDB_local["relativePoint"], XiconBGTargetsDB_local["xOffset"], XiconBGTargetsDB_local["yOffset"])
-    EnemyUnits:SetWidth(80)
+    EnemyUnits:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    EnemyUnits:SetWidth(140)
     EnemyUnits:SetHeight(15)
     EnemyUnits:SetScale(1)
     EnemyUnits:Hide()
-    local title = EnemyUnits:CreateFontString(EnemyUnits, "OVERLAY", "GameFontNormalSmall")
-    title:SetPoint("TOP", 0, -2)
-    title:SetText("XiconBGTarget (right click to move)")
-    EnemyUnits.title = title
+    EnemyUnits.title = EnemyUnits:CreateFontString(EnemyUnits, "OVERLAY", "GameFontNormalSmall")
+    EnemyUnits.title:SetPoint("TOP", 0, 8)
+    EnemyUnits.title:SetText("XiconBGTarget\n(right click to move)")
 
     local frames = {}
     -- unit frames
@@ -93,14 +110,6 @@ local function createUnitFrames()
         unit.flag:SetSize(24, 24)
         unit.flag:SetPoint("LEFT", unit, "RIGHT", 0, 0)
         unit.flag:Hide()
-
-        ---healIcon
-        unit.heal = unit:CreateTexture(nil, "OVERLAY")
-        unit.heal:SetTexture("Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons")
-        unit.heal:SetSize(24, 24)
-        unit.heal:SetPoint("RIGHT", unit, "LEFT", 0, 0)
-        unit.heal:SetTexCoord(unpack(getIconCoords(2,0)))
-        unit.heal:Show()
 
         ---highlight
         function unit:Update()
@@ -210,6 +219,14 @@ local function createUnitFrames()
 
         unit.healthBar = healthBar
 
+        ---healIcon
+        unit.heal = unit:CreateTexture(nil, "OVERLAY")
+        unit.heal:SetTexture("Interface\\AddOns\\"..ADDON_NAME.."\\gfx\\healers_icons")
+        unit.heal:SetSize(23, 23)
+        unit.heal:SetPoint("RIGHT", unit, "LEFT", -2, 0)
+        unit.heal:SetTexCoord(unpack(getIconCoords(2,0)))
+        unit.heal:Show()
+
         frames[i] = unit
         unit:Show()
     end
@@ -232,14 +249,31 @@ function events:ADDON_LOADED(...)
         if not XiconBGTargetsDB_local then
             XiconBGTargetsDB_local = {}
         end
-        if not XiconBGTargetsDB_local["point"] then XiconBGTargetsDB_local["point"] = "CENTER" end
-        if not XiconBGTargetsDB_local["relativePoint"] then XiconBGTargetsDB_local["relativePoint"] = "CENTER" end
-        if not XiconBGTargetsDB_local["xOffset"] then XiconBGTargetsDB_local["xOffset"] = 0 end
-        if not XiconBGTargetsDB_local["yOffset"] then XiconBGTargetsDB_local["yOffset"] = 0 end
+        if not XiconBGTargetsDB_local["point"] or XiconBGTargetsDB_local["point"] ~= "RIGHT" then XiconBGTargetsDB_local["point"] = "RIGHT" end
+        if not XiconBGTargetsDB_local["relativePoint"] or XiconBGTargetsDB_local["relativePoint"] ~= "LEFT" then XiconBGTargetsDB_local["relativePoint"] = "LEFT" end
+        if not XiconBGTargetsDB_local["xOffset"] or XiconBGTargetsDB_local["xOffset"] ~= -2 then XiconBGTargetsDB_local["xOffset"] = -2 end
+        if not XiconBGTargetsDB_local["yOffset"] or XiconBGTargetsDB_local["yOffset"] ~= 0 then XiconBGTargetsDB_local["yOffset"] = 0 end
+        if not XiconBGTargetsDB_local["iconSize"] or XiconBGTargetsDB_local["iconSize"] ~= 25 then XiconBGTargetsDB_local["iconSize"] = 25 end
+        if not XiconBGTargetsDB_local["fontSize"] or XiconBGTargetsDB_local["fontSize"] ~= 10 then XiconBGTargetsDB_local["fontSize"] = 10 end
+        if not XiconBGTargetsDB_local["font"] or XiconBGTargetsDB_local["font"] ~= "Fonts\\ARIALN.ttf" then XiconBGTargetsDB_local["font"] = "Fonts\\ARIALN.ttf" end
+        if XiconBGTargetsDB_local["responsive"] == nil or XiconBGTargetsDB_local["responsive"] then XiconBGTargetsDB_local["responsive"] = false end
+        if not XiconBGTargetsDB_local["sorting"] or XiconBGTargetsDB_local["sorting"] ~= 'descending' then XiconBGTargetsDB_local["sorting"] = 'descending' end
+        if not XiconBGTargetsDB_local["alpha"] or XiconBGTargetsDB_local["alpha"] ~= 0.9 then XiconBGTargetsDB_local["alpha"] = 0.9 end
 
+        XiconDebuffLib_BG = GetXiconBGDebuffModule()
         print("Loaded")
-        XiconDebuffLib_BG:Init(nil)
+        XiconDebuffLib_BG:Init(XiconBGTargetsDB_local)
         createUnitFrames()
+
+        -- get localized classnames from Compatibility
+        FillLocalizedClassList(localizedClassNames["male"], false)
+        FillLocalizedClassList(localizedClassNames["female"], true)
+        for k,v in pairs(localizedClassNames["male"]) do
+            localizedClassNames[v] = k
+        end
+        for k,v in pairs(localizedClassNames["female"]) do
+            localizedClassNames[v] = k
+        end
         XiconBGTargets:UnregisterEvent("ADDON_LOADED")
     end
 end
@@ -297,7 +331,7 @@ function events:CHAT_MSG_BG_SYSTEM_HORDE(msg)
     parseFlagEvent(msg, "Horde")
 end
 
-local isInBattleground = false
+
 function events:PLAYER_ENTERING_WORLD()
     local instance = select(2, IsInInstance())
     factionGrp = UnitFactionGroup("player")
@@ -353,7 +387,7 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                     break
                 end
             end
-            if status == "active" and mapName ~= "Alterac Valley" or testMode then
+            if (status == "active" and mapName ~= "Alterac Valley") or testMode then
                 XiconBGTargets.EnemyUnits:Show()
                 local opposingFaction = {}
                 local j = 1
@@ -361,16 +395,20 @@ XiconBGTargets:SetScript("OnUpdate", function(_, elapsed)
                     local name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, filename, damageDone, healingDone = GetBattlefieldScore(i);
                     if ( faction and name and class ) then
                         if ( factionGrp == "Alliance" and faction == 0 ) then
-                            opposingFaction[j] = {name = name, class = class, killingBlows = killingBlows, honorableKills = honorableKills, deaths = deaths, honorGained = honorGained, rank = rank, damageDone = damageDone, healingDone = healingDone}
+                            opposingFaction[j] = {name = name, class = localizedClassNames[class], killingBlows = killingBlows, honorableKills = honorableKills, deaths = deaths, honorGained = honorGained, rank = rank, damageDone = damageDone, healingDone = healingDone}
                             j = j + 1
                         elseif ( factionGrp == "Horde" and faction == 1 ) then
-                            opposingFaction[j] = {i, name, class}
+                            opposingFaction[j] = {name = name, class = localizedClassNames[class], killingBlows = killingBlows, honorableKills = honorableKills, deaths = deaths, honorGained = honorGained, rank = rank, damageDone = damageDone, healingDone = healingDone}
                             j = j + 1
                         end
                     end
                 end
                 if testMode then
-                    opposingFaction[j] = {name = "Timber Worg", class = "Warrior", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
+                    opposingFaction[1] = {name = "Noxilia", class = "Druid", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
+                    opposingFaction[2] = {name = "Noxmo", class = "Priest", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 0, healingDone = 1}
+                    opposingFaction[3] = {name = "Teebee", class = "Rogue", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
+                    opposingFaction[4] = {name = "Knall", class = "Warlock", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
+                    opposingFaction[5] = {name = "Timber Worg", class = "Mage", killingBlows = 0, honorableKills = 0, deaths = 0, honorGained = 0, rank = 0, damageDone = 1, healingDone = 0}
                 end
                 table.sort(opposingFaction, function(a,b) -- sort by class and name
                     local class = a.class:upper() < b.class:upper()
