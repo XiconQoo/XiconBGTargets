@@ -1,6 +1,6 @@
 # XiconBGTargets TBC Addon
 
-### [v1.2-Beta Download Here](https://github.com/XiconQoo/XiconBGTargets/releases/download/v1.2-Beta/XiconBGTargets_v1.2-Beta.zip)
+### [v1.3-Beta Download Here](https://github.com/XiconQoo/XiconBGTargets/releases/download/v1.3-Beta/XiconBGTargets_v1.3-Beta.zip)
 
 ### [Dependant on Compatibility Addon](https://github.com/raethkcj/Compatibility)
 
