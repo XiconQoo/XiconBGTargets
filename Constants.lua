@@ -1,89 +1,3 @@
-XiconPlateBuffs_CC = {
-    --
-    --druid
-    --
-    ["Maim"] = true,
-    ["Cyclone"] = true,
-    ["Bash"] = true,
-    ["Hibernate"] = true,
-    ["Entangling Roots"] = true,
-    --
-    --hunter
-    --
-    ["Concussive Shot"] = true,
-    ["Scare Beast	"] = true,
-    ["Freezing Trap"] = true,
-    ["Wyvern Sting	"] = true,
-    ["Wing Clip"] = true,
-    ["Scatter Shot"] = true,
-    ["Silencing Shot"] = true,
-    --hunter pets
-    ["Charge"] = true,
-    ["Intimidation"] = true,
-    --
-    --mage
-    --
-    ["Chilled"] = true,
-    ["Frostbite"] = true,
-    ["Impact"] = true,
-    ["Polymorph"] = true,
-    ["Frost Nova"] = true,
-    ["Counterspell"] = true,
-    ["Dragon's Breath"] = true,
-    --mage pet
-    ["Freeze"] = true,
-    --
-    --paladin
-    --
-    ["Hammer of Justice"] = true,
-    ["Repentance"] = true,
-    ["Turn Evil"] = true,
-    --
-    --priest
-    --
-    ["Psychic Scream"] = true,
-    ["Silence"] = true,
-    ["Blackout"] = true,
-    ["Mind Control"] = true,
-    --
-    --rogue
-    --
-    ["Gouge"] = true,
-    ["Sap"] = true,
-    ["Cheap Shot"] = true,
-    ["Garrote - Silence"] = true,
-    ["Kidney Shot"] = true,
-    ["Blind"] = true,
-    --
-    --shaman
-    --
-    ["Frost Shock"] = true,
-    --
-    --warlock
-    --
-    ["Death Coil"] = true,
-    ["Fear"] = true,
-    ["Howling Terror"] = true,
-    ["Shadowfury"] = true,
-    ["Pyroclasm"] = true,
-    --warlock pets
-    ["Intercept Stun"] = true,
-    ["Spell Lock"] = true,
-    ["Seduction"] = true,
-    --
-    --warrior
-    --
-    ["Charge Stun"] = true,
-    ["Intimidating Shout"] = true,
-    ["Intercept Stun"] = true,
-    ["Hamstring"] = true,
-    ["Piercing Howl"] = true,
-    --
-    --racial + general
-    ["Mace Stun Effect"] = true,
-    ["Chastise"] = true,
-    ["War Stomp"] = true,
-}
 function initTrackedCrowdControl()
     return {
         -- Cyclone
@@ -91,6 +5,7 @@ function initTrackedCrowdControl()
             track = "debuff",
             duration = 6,
             priority = 40,
+            id = 33786,
         },
         -- Hibernate
         [GetSpellInfo(18658)] = {
@@ -98,6 +13,7 @@ function initTrackedCrowdControl()
             duration = 10,
             priority = 40,
             magic = true,
+            id = 18658,
         },
         -- Entangling Roots
         [GetSpellInfo(26989)] = {
@@ -107,6 +23,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             magic = true,
             root = true,
+            id = 26989,
         },
         -- Feral Charge
         [GetSpellInfo(16979)] = {
@@ -114,18 +31,21 @@ function initTrackedCrowdControl()
             duration = 4,
             priority = 30,
             root = true,
+            id = 16979,
         },
         -- Bash
         [GetSpellInfo(8983)] = {
             track = "debuff",
             duration = 4,
             priority = 30,
+            id = 8983,
         },
         -- Pounce
         [GetSpellInfo(9005)] = {
             track = "debuff",
             duration = 3,
             priority = 40,
+            id = 9005,
         },
         -- Maim
         [GetSpellInfo(22570)] = {
@@ -133,14 +53,17 @@ function initTrackedCrowdControl()
             duration = 6,
             priority = 40,
             incapacite = true,
+            id = 22570,
         },
 
+        --[[
         -- Innervate
         [GetSpellInfo(29166)] = {
             track = "buff",
             duration = 20,
             priority = 10,
-        },
+            id = 29166,
+        },--]]
 
 
         -- Freezing Trap Effect
@@ -150,6 +73,7 @@ function initTrackedCrowdControl()
             priority = 40,
             onDamage = true,
             magic = true,
+            id = 14309,
         },
         -- Wyvern Sting
         [GetSpellInfo(19386)] = {
@@ -159,6 +83,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             poison = true,
             sleep = true,
+            id = 19386,
         },
         -- Scatter Shot
         [GetSpellInfo(19503)] = {
@@ -166,6 +91,7 @@ function initTrackedCrowdControl()
             duration = 4,
             priority = 40,
             onDamage = true,
+            id = 19503,
         },
         -- Silencing Shot
         [GetSpellInfo(34490)] = {
@@ -173,12 +99,14 @@ function initTrackedCrowdControl()
             duration = 3,
             priority = 15,
             magic = true,
+            id = 34490,
         },
         -- Intimidation
         [GetSpellInfo(19577)] = {
             track = "debuff",
             duration = 2,
             priority = 40,
+            id = 19577,
         },
         --[[
         -- The Beast Within
@@ -186,6 +114,7 @@ function initTrackedCrowdControl()
             track = "buff",
             duration = 18,
             priority = 20,
+            id = 34692,
         },--]]
 
 
@@ -196,6 +125,7 @@ function initTrackedCrowdControl()
             priority = 40,
             onDamage = true,
             magic = true,
+            id = 12826,
         },
         -- Dragon's Breath
         [GetSpellInfo(31661)] = {
@@ -204,6 +134,7 @@ function initTrackedCrowdControl()
             priority = 40,
             onDamage = true,
             magic = true,
+            id = 31661,
         },
         -- Frost Nova
         [GetSpellInfo(27088)] = {
@@ -213,6 +144,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             magic = true,
             root = true,
+            id = 27088,
         },
         -- Freeze (Water Elemental)
         [GetSpellInfo(33395)] = {
@@ -222,6 +154,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             magic = true,
             root = true,
+            id = 33395,
         },
         -- Counterspell - Silence
         [GetSpellInfo(18469)] = {
@@ -229,15 +162,16 @@ function initTrackedCrowdControl()
             duration = 4,
             priority = 15,
             magic = true,
+            id = 18469,
         },
-        --[[
+
         -- Ice Block
         [GetSpellInfo(45438)] = {
             track = "buff",
             duration = 10,
             priority = 20,
+            id = 45438,
         },
-        --]]
 
 
         -- Hammer of Justice
@@ -246,6 +180,7 @@ function initTrackedCrowdControl()
             duration = 6,
             priority = 40,
             magic = true,
+            id = 10308,
         },
         -- Repentance
         [GetSpellInfo(20066)] = {
@@ -255,6 +190,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             magic = true,
             incapacite = true,
+            id = 20066,
         },
         --[[
         -- Blessing of Protection
@@ -262,6 +198,7 @@ function initTrackedCrowdControl()
             track = "buff",
             duration = 10,
             priority = 10,
+            id = 10278,
         },
         -- Blessing of Freedom
         [GetSpellInfo(1044)] = {
@@ -274,6 +211,7 @@ function initTrackedCrowdControl()
             track = "buff",
             duration = 12,
             priority = 20,
+            id = 642,
         },
         --]]
 
@@ -285,6 +223,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             fear = true,
             magic = true,
+            id = 8122,
         },
         -- Chastise
         [GetSpellInfo(44047)] = {
@@ -292,6 +231,7 @@ function initTrackedCrowdControl()
             duration = 8,
             priority = 30,
             root = true,
+            id = 44047,
         },
         -- Mind Control
         [GetSpellInfo(605)] = {
@@ -299,6 +239,7 @@ function initTrackedCrowdControl()
             duration = 10,
             priority = 40,
             magic = true,
+            id = 605,
         },
         -- Silence
         [GetSpellInfo(15487)] = {
@@ -306,13 +247,23 @@ function initTrackedCrowdControl()
             duration = 5,
             priority = 15,
             magic = true,
+            id = 15487,
         },
         --[[
+        --Feiry Fire
+        [GetSpellInfo(26993)] = {
+            track = "debuff",
+            duration = 40,
+            priority = 15,
+            magic = true,
+            id = 26993,
+        },
         -- Pain Suppression
         [GetSpellInfo(33206)] = {
             track = "buff",
             duration = 8,
             priority = 10,
+            id = 33206,
         },
         --]]
 
@@ -324,6 +275,7 @@ function initTrackedCrowdControl()
             priority = 40,
             onDamage = true,
             incapacite = true,
+            id = 6770,
         },
         -- Blind
         [GetSpellInfo(2094)] = {
@@ -331,18 +283,21 @@ function initTrackedCrowdControl()
             duration = 10,
             priority = 40,
             onDamage = true,
+            id = 2094,
         },
         -- Cheap Shot
         [GetSpellInfo(1833)] = {
             track = "debuff",
             duration = 4,
             priority = 40,
+            id = 1833,
         },
         -- Kidney Shot
         [GetSpellInfo(8643)] = {
             track = "debuff",
             duration = 6,
             priority = 40,
+            id = 8643,
         },
         -- Gouge
         [GetSpellInfo(1776)] = {
@@ -351,18 +306,21 @@ function initTrackedCrowdControl()
             priority = 40,
             onDamage = true,
             incapacite = true,
+            id = 1776,
         },
         -- Kick - Silence
         [GetSpellInfo(18425)] = {
             track = "debuff",
             duration = 2,
             priority = 15,
+            id = 18425,
         },
         -- Garrote - Silence
         [GetSpellInfo(1330)] = {
             track = "debuff",
             duration = 3,
             priority = 15,
+            id = 1330,
         },
         --[[
         -- Cloak of Shadows
@@ -370,6 +328,7 @@ function initTrackedCrowdControl()
             track = "buff",
             duration = 5,
             priority = 20,
+            id = 31224,
         },
         --]]
 
@@ -382,12 +341,14 @@ function initTrackedCrowdControl()
             onDamage = true,
             fear = true,
             magic = true,
+            id = 5782,
         },
         -- Death Coil
         [GetSpellInfo(27223)] = {
             track = "debuff",
             duration = 3,
             priority = 40,
+            id = 27223,
         },
         -- Shadowfury
         [GetSpellInfo(30283)] = {
@@ -395,6 +356,7 @@ function initTrackedCrowdControl()
             duration = 2,
             priority = 40,
             magic = true,
+            id = 30283,
         },
         -- Seduction (Succubus)
         [GetSpellInfo(6358)] = {
@@ -404,6 +366,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             fear = true,
             magic = true,
+            id = 6358,
         },
         -- Howl of Terror
         [GetSpellInfo(5484)] = {
@@ -413,6 +376,7 @@ function initTrackedCrowdControl()
             onDamage = true,
             fear = true,
             magic = true,
+            id = 5484,
         },
         -- Spell Lock (Felhunter)
         [GetSpellInfo(24259)] = {
@@ -420,6 +384,7 @@ function initTrackedCrowdControl()
             duration = 3,
             priority = 15,
             magic = true,
+            id = 24259,
         },
         --[[
         -- Unstable Affliction
@@ -428,6 +393,7 @@ function initTrackedCrowdControl()
             duration = 5,
             priority = 15,
             magic = true,
+            id = 31117,
         },
         --]]
 
@@ -439,18 +405,21 @@ function initTrackedCrowdControl()
             priority = 15,
             onDamage = true,
             fear = true,
+            id = 5246,
         },
         -- Concussion Blow
         [GetSpellInfo(12809)] = {
             track = "debuff",
             duration = 5,
             priority = 40,
+            id = 12809,
         },
         -- Intercept Stun
         [GetSpellInfo(25274)] = {
             track = "debuff",
             duration = 3,
             priority = 40,
+            id = 25274,
         },
 
         --[[
@@ -459,6 +428,7 @@ function initTrackedCrowdControl()
             track = "buff",
             duration = 5,
             priority = 10,
+            id = 23920,
         },
         --]]
 
@@ -468,6 +438,7 @@ function initTrackedCrowdControl()
             track = "debuff",
             duration = 2,
             priority = 40,
+            id = 20549,
         },
         -- Arcane Torrent
         [GetSpellInfo(28730)] = {
@@ -475,6 +446,7 @@ function initTrackedCrowdControl()
             duration = 2,
             priority = 15,
             magic = true,
+            id = 28730,
         },
     }
 end

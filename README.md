@@ -1,15 +1,22 @@
 # XiconBGTargets TBC Addon
 
-### [v1.2-Beta Download Here](https://github.com/XiconQoo/XiconBGTargets/releases/download/v1.2-Beta/XiconBGTargets_v1.2-Beta.zip)
+### [v1.3-Beta Download Here](https://github.com/XiconQoo/XiconBGTargets/releases/download/v1.3-Beta/XiconBGTargets_v1.3-Beta.zip)
+
+### [Dependant on Compatibility Addon](https://github.com/raethkcj/Compatibility)
 
 This addon shows all available enemy units within a BG (except AV).
-You can move the frame by right clicking on the text "EnemyFrames".
+You can move the frame by right clicking on the text above the frames.
 
 ## Screenshot
 
 ![Screenshot](../readme-media/sample.jpg)
 
 ### Changes
+
+v1.3-Beta
+- localized classnames
+- dependency Compatibility addon added
+- DebuffModule updated
 
 v1.2-Beta
 - SoHighPlates revert to nameplate.oldname:GetText() (more reliant)
@@ -36,3 +43,4 @@ v1.0-Beta
 - config menu
 - estimate unit in range
 - show alive or death
+- localization french
